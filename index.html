@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Заявка на консультацию</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #f8f8f8;
+    }
+    h2 {
+      text-align: center;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #2AABEE;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #229acb;
+    }
+  </style>
+</head>
+<body>
+  <h2>Оставить заявку</h2>
+  <form id="requestForm">
+    <textarea id="problem" placeholder="Опишите вашу ситуацию" required></textarea>
+    <input type="text" id="contact" placeholder="Как с вами связаться (телефон или Telegram)" required>
+    <input type="text" id="time" placeholder="Удобное время для связи (необязательно)">
+    <button type="submit">Оставить заявку</button>
+  </form>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    document.getElementById("requestForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const problem = document.getElementById("problem").value.trim();
+      const contact = document.getElementById("contact").value.trim();
+      const time = document.getElementById("time").value.trim();
+
+      if (!problem || !contact) {
+        alert("Пожалуйста, заполните обязательные поля.");
+        return;
+      }
+
+      const data = {
+        problem: problem,
+        contact: contact,
+        time: time
+      };
+
+      tg.sendData(JSON.stringify(data));
+      tg.close();
+    });
+  </script>
+</body>
+</html>

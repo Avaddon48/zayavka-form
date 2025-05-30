@@ -1,73 +1,311 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Заявка на консультацию</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background-color: #f8f8f8;
-    }
-    h2 {
-      text-align: center;
-    }
-    input, textarea, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-    button {
-      background-color: #2AABEE;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-    button:hover {
-      background-color: #229acb;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма заявки - Jemeni Preview</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* Базовые стили, использующие переменные темы Telegram */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 15px;
+            margin: 0;
+            background-color: var(--tg-theme-bg-color, #ffffff); /* Фоновый цвет из темы Telegram */
+            color: var(--tg-theme-text-color, #000000); /* Цвет текста из темы Telegram */
+            overflow-x: hidden; /* Предотвращение горизонтальной прокрутки */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Чтобы подвал прижимался к низу, если контента мало */
+        }
+        .container {
+            flex-grow: 1;
+            max-width: 600px; /* Ограничение ширины для лучшей читаемости на ПК */
+            margin: 0 auto; /* Центрирование контейнера */
+            width: 100%;
+        }
+        h1 {
+            color: var(--tg-theme-text-color, #000000);
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--tg-theme-text-color, #000000);
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--tg-theme-hint-color, #cccccc); /* Граница поля ввода */
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus {
+            border-color: var(--tg-theme-link-color, #007aff); /* Цвет границы при фокусе */
+            outline: none;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .error-message {
+            color: var(--tg-theme-destructive-text-color, #ff3b30); /* Цвет текста ошибки */
+            font-size: 13px;
+            margin-top: 4px;
+            display: none; /* Скрыто по умолчанию */
+        }
+        .is-invalid {
+            border-color: var(--tg-theme-destructive-text-color, #ff3b30) !important;
+        }
+        .submit-button-container {
+            margin-top: 25px;
+        }
+        button.form-submit-btn {
+            display: block;
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 17px;
+            font-weight: bold;
+            background-color: var(--tg-theme-button-color, #007aff); /* Основной цвет кнопки */
+            color: var(--tg-theme-button-text-color, #ffffff); /* Цвет текста на кнопке */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        button.form-submit-btn:hover {
+            /* Можно добавить эффект при наведении, если не используется MainButton */
+        }
+        button.form-submit-btn:disabled {
+            background-color: var(--tg-theme-hint-color, #cccccc);
+            cursor: not-allowed;
+        }
+        .close-button-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+        button.app-close-btn {
+            padding: 10px 18px;
+            font-size: 15px;
+            background-color: transparent;
+            color: var(--tg-theme-link-color, #007aff); /* Используем цвет ссылки для кнопки закрытия */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        /* Стили для Jemeni Preview (замените на ваши корпоративные цвета) */
+        /* Пример:
+        :root {
+            --jemeni-primary-color: #4A90E2;
+            --jemeni-secondary-color: #F5A623;
+            --jemeni-text-color: #333333;
+        }
+        body { background-color: #f4f6f8; }
+        h1 { color: var(--jemeni-primary-color); }
+        button.form-submit-btn { background-color: var(--jemeni-primary-color); }
+        input:focus { border-color: var(--jemeni-primary-color); }
+        */
+    </style>
 </head>
 <body>
-  <h2>Оставить заявку</h2>
-  <form id="requestForm">
-    <textarea id="problem" placeholder="Опишите вашу ситуацию" required></textarea>
-    <input type="text" id="contact" placeholder="Как с вами связаться (телефон или Telegram)" required>
-    <input type="text" id="time" placeholder="Удобное время для связи (необязательно)">
-    <button type="submit">Оставить заявку</button>
-  </form>
+    <div class="container">
+        <h1>📝 Форма заявки</h1>
+        <p style="text-align:center; margin-bottom:20px; color: var(--tg-theme-hint-color, #707579);">Пожалуйста, заполните поля ниже для отправки вашего запроса.</p>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+        <form id="jemeniRequestForm">
+            <div class="form-group">
+                <label for="fullName">ФИО <span style="color: var(--tg-theme-destructive-text-color, red);">*</span></label>
+                <input type="text" id="fullName" name="fullName" required>
+                <div class="error-message" id="fullNameError">Пожалуйста, укажите ваше ФИО.</div>
+            </div>
 
-    document.getElementById("requestForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const problem = document.getElementById("problem").value.trim();
-      const contact = document.getElementById("contact").value.trim();
-      const time = document.getElementById("time").value.trim();
+            <div class="form-group">
+                <label for="phone">Телефон <span style="color: var(--tg-theme-destructive-text-color, red);">*</span></label>
+                <input type="tel" id="phone" name="phone" required placeholder="+7 (999) 123-45-67">
+                <div class="error-message" id="phoneError">Введите корректный номер телефона.</div>
+            </div>
 
-      if (!problem || !contact) {
-        alert("Пожалуйста, заполните обязательные поля.");
-        return;
-      }
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="example@mail.com">
+                <div class="error-message" id="emailError">Введите корректный email адрес.</div>
+            </div>
 
-      const data = {
-        problem: problem,
-        contact: contact,
-        time: time
-      };
+            <div class="form-group">
+                <label for="comment">Комментарий</label>
+                <textarea id="comment" name="comment" rows="4"></textarea>
+            </div>
 
-      tg.sendData(JSON.stringify(data));
-      tg.close();
-    });
-  </script>
+            <div class="submit-button-container">
+                 <button type="submit" class="form-submit-btn" id="submitFormButton">Отправить заявку</button>
+            </div>
+        </form>
+         <div class="close-button-container">
+            <button type="button" class="app-close-btn" id="customCloseButton">Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        // Убедимся, что объект Telegram WebApp доступен
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+
+            // 1. Инициализация приложения
+            tg.ready();
+            tg.expand(); // Разворачиваем приложение на весь экран
+
+            // 2. Элементы формы и сообщений об ошибках
+            const form = document.getElementById('jemeniRequestForm');
+            const fullNameInput = document.getElementById('fullName');
+            const phoneInput = document.getElementById('phone');
+            const emailInput = document.getElementById('email');
+            const commentInput = document.getElementById('comment');
+            const submitFormButton = document.getElementById('submitFormButton'); // Кнопка отправки в форме
+
+            const fullNameError = document.getElementById('fullNameError');
+            const phoneError = document.getElementById('phoneError');
+            const emailError = document.getElementById('emailError');
+
+            // 3. Функции валидации
+            function validateField(input, errorElement, validationFn, errorMessage) {
+                if (!validationFn(input.value.trim())) {
+                    input.classList.add('is-invalid');
+                    errorElement.textContent = errorMessage;
+                    errorElement.style.display = 'block';
+                    return false;
+                }
+                input.classList.remove('is-invalid');
+                errorElement.style.display = 'none';
+                return true;
+            }
+
+            function isNotEmpty(value) {
+                return value.length > 0;
+            }
+
+            function isValidPhone(phone) {
+                // Простая проверка: минимум 7 цифр, может содержать +, (, ), -, пробелы
+                const phoneRegex = /^\+?[0-9\s\(\)-]{7,}$/; 
+                // Более строгая для РФ: /^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/
+                return phoneRegex.test(phone);
+            }
+
+            function isValidEmail(email) {
+                if (email.length === 0) return true; // Email не обязателен
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+            
+            // Динамическая валидация при потере фокуса
+            fullNameInput.addEventListener('blur', () => validateField(fullNameInput, fullNameError, isNotEmpty, 'Пожалуйста, укажите ваше ФИО.'));
+            phoneInput.addEventListener('blur', () => validateField(phoneInput, phoneError, isValidPhone, 'Введите корректный номер телефона.'));
+            emailInput.addEventListener('blur', () => validateField(emailInput, emailError, isValidEmail, 'Введите корректный email адрес.'));
+
+
+            // 4. Обработка отправки формы
+            function handleFormSubmit() {
+                const isFullNameValid = validateField(fullNameInput, fullNameError, isNotEmpty, 'Пожалуйста, укажите ваше ФИО.');
+                const isPhoneValid = validateField(phoneInput, phoneError, isValidPhone, 'Введите корректный номер телефона.');
+                const isEmailValid = validateField(emailInput, emailError, isValidEmail, 'Введите корректный email адрес.');
+
+                if (isFullNameValid && isPhoneValid && isEmailValid) {
+                    const formData = {
+                        fullName: fullNameInput.value.trim(),
+                        phone: phoneInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        comment: commentInput.value.trim(),
+                        userId: tg.initDataUnsafe?.user?.id || null, // Добавляем ID пользователя, если доступен
+                        username: tg.initDataUnsafe?.user?.username || null // Добавляем username, если доступен
+                    };
+
+                    // Отправляем данные боту
+                    tg.sendData(JSON.stringify(formData));
+                    
+                    // Показываем уведомление об успехе (можно также использовать tg.showAlert)
+                    // tg.showAlert('Ваша заявка успешно отправлена!');
+                    
+                    // Опционально: очистить форму или показать сообщение об успехе прямо в приложении
+                    // form.reset();
+                    // submitFormButton.disabled = true;
+                    // submitFormButton.textContent = 'Отправлено!';
+                    
+                    // Закрытие приложения после успешной отправки (согласно ТЗ "Возможность закрыть миниприложение вручную")
+                    // Если нужно закрывать автоматически, раскомментируйте tg.close()
+                    // tg.close(); 
+                    // Для демонстрации, что данные отправлены, можно показать алерт и оставить приложение открытым.
+                    // В ТЗ указано "Показ уведомления об успешной отправке", что может быть и tg.showAlert()
+                    // и затем "Возможность закрыть миниприложение вручную" - это стандартная кнопка закрытия или наша.
+                    
+                    // Главная кнопка Telegram будет показана как "Отправлено" и заблокирована
+                    tg.MainButton.setText('✅ Заявка отправлена!');
+                    tg.MainButton.disable();
+                    tg.HapticFeedback.notificationOccurred('success');
+
+                    // Через некоторое время можно снова активировать кнопку или закрыть приложение
+                    setTimeout(() => {
+                         tg.MainButton.setText('Отправить заявку');
+                         tg.MainButton.enable();
+                         // tg.close(); // Если нужно закрыть после задержки
+                    }, 3000);
+
+
+                } else {
+                    tg.HapticFeedback.notificationOccurred('error');
+                    tg.showAlert('Пожалуйста, исправьте ошибки в форме.');
+                }
+            }
+            
+            // Привязка к кнопке в форме
+            form.addEventListener('submit', (event) => {
+                event.preventDefault(); // Предотвращаем стандартную отправку формы
+                handleFormSubmit();
+            });
+            submitFormButton.addEventListener('click', (event) => { // Для type="button" или если submit не сработал
+                 event.preventDefault();
+                 handleFormSubmit();
+            });
+
+
+            // 5. Настройка основной кнопки Telegram (MainButton)
+            tg.MainButton.setText('Отправить заявку');
+            tg.MainButton.setTextColor(tg.themeParams.button_text_color || '#ffffff');
+            tg.MainButton.setColor(tg.themeParams.button_color || '#007aff');
+            tg.MainButton.show();
+
+            tg.MainButton.onClick(handleFormSubmit);
+
+            // 6. Кнопка закрытия приложения
+            const customCloseButton = document.getElementById('customCloseButton');
+            customCloseButton.addEventListener('click', () => {
+                tg.close();
+            });
+            
+            // Информируем пользователя о загрузке, если есть данные
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                console.log("Приложение запущено пользователем:", tg.initDataUnsafe.user);
+            } else {
+                console.log("Данные пользователя недоступны (возможно, запущено не в Telegram).");
+            }
+
+        } else {
+            document.body.innerHTML = '<div style="text-align:center; padding: 50px;"><h1>Ошибка</h1><p>Не удалось инициализировать Telegram WebApp. Пожалуйста, откройте это приложение через Telegram.</p></div>';
+            console.error("Telegram WebApp script not loaded or not in Telegram environment.");
+        }
+    </script>
 </body>
 </html>
